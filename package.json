@@ -19,7 +19,7 @@
   "homepage": "https://github.com/samao/tools#readme",
   "devDependencies": {
     "chalk": "^2.4.1",
-    "single-line-log": "^1.1.2",
-    "fetch": "^1.1.0"
+    "fetch": "^1.1.0",
+    "single-line-log": "^1.1.2"
   }
 }

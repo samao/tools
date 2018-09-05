@@ -82,7 +82,7 @@ async function m3u8loader(bitrates, dir, remote) {
 	for(let pathUrl of bitrates) {
 		const m3u8Dir = path.parse(pathUrl).dir;
 
-		checkDirPath(path.join('.', downloads, dir, m3u8Dir));
+		checkDirPath(path.join('.', downloads, dir, pathUrl));
 		const m3u8Url = `${remote}${dir}/${pathUrl}`;
 		log(chalk.yellow(`清晰度`), m3u8Url);
 		const data = await loader(m3u8Url);
