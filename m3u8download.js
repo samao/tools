@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const linelog = require('single-line-log').stdout;
+const downloads = 'downloads'
 
 let tsloaded = 0;
 let tstotal = 0;
@@ -81,16 +82,16 @@ async function m3u8loader(bitrates, dir, remote) {
 	for(let pathUrl of bitrates) {
 		const m3u8Dir = path.parse(pathUrl).dir;
 
-		checkDirPath(path.join('.', dir, m3u8Dir));
+		checkDirPath(path.join('.', downloads, dir, m3u8Dir));
 		const m3u8Url = `${remote}${dir}/${pathUrl}`;
 		log(chalk.yellow(`清晰度`), m3u8Url);
 		const data = await loader(m3u8Url);
-		fs.createWriteStream(path.join('.', dir, pathUrl)).end(data);
+		fs.createWriteStream(path.join('.',downloads, dir, pathUrl)).end(data);
 
 		const tsMap = data.toString().match(/(.+\.ts)/ig);
 		tsMap.forEach(tsUrl => {
 			const tsDir = path.parse(tsUrl).dir;
-			const root = path.join('.', dir, m3u8Dir);
+			const root = path.join('.', downloads ,dir, m3u8Dir);
 			checkDirPath(path.join(root, tsUrl));
 			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join(root, tsUrl)})
 		});
@@ -100,16 +101,22 @@ async function m3u8loader(bitrates, dir, remote) {
 	await downloadTs(tsTask);
 }
 
-//http://zuikzy.51moca.com/2018/08/24/0RxUys9rxMVnbRZN/playlist.m3u8
-fetch.fetchUrl('http://zuikzy.51moca.com/2018/08/24/0RxUys9rxMVnbRZN/playlist.m3u8', (error, meta, data) => {
+const [,, sourceUrl] = process.argv;
+
+if(!sourceUrl) {
+	log(chalk.red('Error'), '没有指定下载路径');
+	return;
+}
+
+fetch.fetchUrl(sourceUrl, (error, meta, data) => {
 	if(error) {
 		log(chalk.red('Error'), error);
 		return
 	}
 	const { pathname, protocol, host} = url.parse(meta.finalUrl);
-	checkDirPath(path.join('.', pathname));
+	checkDirPath(path.join('.', downloads, pathname));
 	log(chalk.yellow('写入m3u8list文件'));
-	const m3u8 = fs.createWriteStream(path.join('.', pathname));
+	const m3u8 = fs.createWriteStream(path.join('.', downloads, pathname));
 	m3u8.end(data);
 
 	const rootDir = path.parse(pathname).dir;
@@ -121,7 +128,7 @@ fetch.fetchUrl('http://zuikzy.51moca.com/2018/08/24/0RxUys9rxMVnbRZN/playlist.m3
 		const tsMap = content.match(/(.+\.ts)/ig);
 		tsMap.forEach(tsUrl => {
 			const { dir } = path.parse(tsUrl);
-			const root = path.join('.', rootDir);
+			const root = path.join('.', downloads, rootDir);
 			checkDirPath(path.join(root, dir));
 			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join(root, tsUrl)})
 		});
