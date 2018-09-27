@@ -91,9 +91,9 @@ async function m3u8loader(bitrates, dir, remote) {
 		const tsMap = data.toString().match(/(.+\.ts)/ig);
 		tsMap.forEach(tsUrl => {
 			const tsDir = path.parse(tsUrl).dir;
-			const root = path.join('.', downloads ,dir, m3u8Dir);
-			checkDirPath(path.join(root, tsUrl));
-			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join(root, tsUrl)})
+			const root = path.join('.' ,dir, m3u8Dir);
+			checkDirPath(path.join('.', downloads, dir, m3u8Dir, tsUrl));
+			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join('.',downloads,dir,m3u8Dir, tsUrl)})
 		});
 	}
 	tstotal = tsTask.length;
@@ -128,9 +128,9 @@ fetch.fetchUrl(sourceUrl, (error, meta, data) => {
 		const tsMap = content.match(/(.+\.ts)/ig);
 		tsMap.forEach(tsUrl => {
 			const { dir } = path.parse(tsUrl);
-			const root = path.join('.', downloads, rootDir);
-			checkDirPath(path.join(root, dir));
-			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join(root, tsUrl)})
+			const root = path.join('.', rootDir);
+			checkDirPath(path.join('.', downloads, rootDir, dir));
+			tsTask.push({dist: `${remote}/${root}/${tsUrl}`, out: path.join('.', downloads, rootDir, dir, tsUrl)})
 		});
 		tstotal = tsTask.length;
 		log(chalk.blue('开始下载ts文件，总数：'), tsTask.length, '个')
