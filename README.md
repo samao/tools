@@ -21,3 +21,13 @@
 `node m3u8download playlist.m3u8`
 
 会下载视频到项目 stream目录
+
+### 4. bilibili-spider
+
+`node bilibili-spider.js aid|url|range`
+
+* aid B站对应aid
+* url B站视频页地址
+* range B站aid范围
+
+以上参数任选一执行
