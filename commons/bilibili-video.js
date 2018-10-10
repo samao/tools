@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-09-30 14:45:40 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-10-10 12:28:46
+ * @Last Modified time: 2018-10-10 15:32:24
  */
 const fetch = require('fetch');
 const md5 = require('md5');
@@ -11,16 +11,14 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const log = require('./log');
+const headers = require('./bilibili-headers');
+const linelog = require('single-line-log').stdout;
+const chalk = require('chalk');
 
 const sign = cid => {
     const appKey = '1c15888dc316e05a15fdd0a02ed6584f';
     const signed = md5(['qn=0', 'player=1', 'ts=1538214532', `cid=${cid}`].sort().join('&') + appKey);
     return `https://interface.bilibili.com/v2/playurl?qn=0&player=1&cid=${cid}&ts=1538214532&sign=${signed}`;
-};
-
-const headers = {
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:62.0) Gecko/20100101 Firefox/62.0',
-    Referer: 'https://static.hdslb.com/play.swf'
 };
 
 async function parser(pageUrl) {
@@ -100,13 +98,22 @@ async function fetchVideo({ aid, cid, title, vurl, pageUrl }, vfolder) {
             headers
         });
         video.pipe(fs.createWriteStream(save));
+        let byteloaded = 0;
+        video.on('data', chunks => {
+            byteloaded += Buffer.byteLength(chunks);
+            const total = parseInt(video.meta.responseHeaders['content-length']);
+            linelog(
+                chalk.bold.red('当前进度:'),
+                chalk.bold.yellow(Number((100 * byteloaded) / total).toFixed(2) + '%')
+            );
+        });
         video.on('end', err => {
             if (err) {
                 log('爬取失败：', err);
                 rej(err);
                 return;
             }
-            log('爬取成功：', save);
+            log('\r爬取成功：', save);
             res(true);
         });
     });

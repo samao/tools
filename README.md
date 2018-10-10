@@ -22,12 +22,18 @@
 
 会下载视频到项目 stream目录
 
-### 4. bilibili-spider
+### 4. bilibili
 
-`node bilibili-spider.js aid|url|range`
+`node bilibili.js aid|url|range`
 
 * aid B站对应aid
 * url B站视频页地址
 * range B站aid范围 1-xxxx
 
 以上参数任选一执行
+
+### 5. bilibili-dance-hot
+
+`node bilibili-dance-hot [output]`
+
+* output 可选保存文件夹，默认为downloads
