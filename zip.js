@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-09-28 16:07:44 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-09-30 13:43:04
+ * @Last Modified time: 2018-10-10 12:31:17
  */
 const path = require('path');
 const fs = require('fs');
@@ -39,6 +39,6 @@ async function zip() {
 
 zip()
     .then(spend => {
-        log('打包完成！！！耗时:', (spend / 1000).toFixed(3), 's');
+        log('打包完成！！！耗时:', require('./commons/time')(spend));
     })
     .catch(reason => console.log(reason));

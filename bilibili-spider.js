@@ -2,12 +2,13 @@
  * @Author: iDzeir 
  * @Date: 2018-09-30 15:55:36 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-09-30 16:42:54
+ * @Last Modified time: 2018-10-10 12:22:28
  */
-const spider = require('./commons/bilibili');
+const {fetchVideo, getVideoUrl:spider} = require('./commons/bilibili');
 const log = require('./commons/log');
+const path = require('path');
 
-const [, , range] = process.argv;
+const [, , range, output = 'downloads'] = process.argv;
 
 function tasks() {
     log('##########爬取bilibili视频##########');
@@ -16,7 +17,6 @@ function tasks() {
     log('\t 2.输入单个aid');
     log('\t 3.输入aid范围');
     log('\r');
-    log('爬取任务开启！！！')
     if (range.startsWith('http') || range.startsWith('https')) {
         log('网址爬取:', range);
         return [range];
@@ -39,6 +39,7 @@ function tasks() {
             return [`https://www.bilibili.com/video/av${aid}`];
         }
     }
+    log('爬取任务开启！！！')
 }
 
 async function run() {
@@ -46,14 +47,23 @@ async function run() {
     const taksMap = tasks();
     const results = [];
     let fail = 0;
+    log('保存目录', path.join(__dirname, output));
     for (let pageUrl of taksMap) {
         const result = await spider(pageUrl);
         if (result.ok === 1) {
-            results.push(result.data);
+            log('-----------');
+            const downloaded = await fetchVideo(result.data, output);
+            log('-----------');
+            if(downloaded) {
+                results.push(result.data);
+            }else{
+                fail++;
+            }
         }else{
-            fail++
+            fail++;
         }
     }
+
     return {
         results,
         spend: Date.now() - begin,
@@ -62,10 +72,8 @@ async function run() {
 }
 
 run().then(({spend, results, fail}) => {
-    log('-----------结果-------------')
-    console.log(results);
     log('---------------------------')
-    log('耗时:', spend, 'ms');
+    log('耗时:', require('./commons/time')(spend));
     log('成功:', results.length);
     log('失败:', fail);
     log('##########爬取结束##########');

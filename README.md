@@ -28,6 +28,6 @@
 
 * aid B站对应aid
 * url B站视频页地址
-* range B站aid范围
+* range B站aid范围 1-xxxx
 
 以上参数任选一执行

@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-09-30 13:39:38 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-09-30 13:46:01
+ * @Last Modified time: 2018-10-10 12:31:38
  */
 const path = require('path');
 const fs = require('fs');
@@ -63,4 +63,4 @@ async function write(files) {
     }
 }
 
-unpack().then(spend => log('解压完毕！！！耗时:', spend));
+unpack().then(spend => log('解压完毕！！！耗时:', require('./commons/time')(spend)));
