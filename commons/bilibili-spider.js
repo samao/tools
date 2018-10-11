@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-10-10 14:25:03 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-10-10 15:30:22
+ * @Last Modified time: 2018-10-11 18:06:12
  */
 const { fetchVideo, getVideoUrl: spider } = require('./bilibili-video');
 const log = require('./log');
@@ -13,7 +13,7 @@ module.exports = async function run(tasks, output = 'downloads') {
     const taksMap = tasks();
     const results = [];
     let fail = 0;
-    log('保存目录', path.join(__dirname, '..', output));
+    log('保存目录:', path.join(__dirname, '..', output));
     for (let pageUrl of taksMap) {
         const result = await spider(pageUrl);
         if (result.ok === 1) {

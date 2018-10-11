@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-09-30 15:55:36 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-10-10 14:28:34
+ * @Last Modified time: 2018-10-11 18:06:03
  */
 const log = require('./commons/log');
 
@@ -27,7 +27,7 @@ function tasks() {
         }
         return tmap;
     } else {
-        log('单个视频', range);
+        log('单个视频:', range);
         const aid = parseInt(range);
         if (Number.isNaN(aid)) {
             //参数错误
