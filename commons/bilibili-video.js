@@ -2,7 +2,7 @@
  * @Author: iDzeir 
  * @Date: 2018-09-30 14:45:40 
  * @Last Modified by: iDzeir
- * @Last Modified time: 2018-10-11 18:20:25
+ * @Last Modified time: 2018-10-12 11:48:14
  */
 const fetch = require('fetch');
 const md5 = require('md5');
@@ -17,8 +17,9 @@ const chalk = require('chalk');
 
 const sign = cid => {
     const appKey = '1c15888dc316e05a15fdd0a02ed6584f';
-    const signed = md5(['qn=0', 'player=1', 'ts=1538214532', `cid=${cid}`].sort().join('&') + appKey);
-    return `https://interface.bilibili.com/v2/playurl?qn=0&player=1&cid=${cid}&ts=1538214532&sign=${signed}`;
+    const time = (Date.now() / 1000) >> 0;
+    const signed = md5(['qn=0', 'player=1', `ts=${time}`, `cid=${cid}`].sort().join('&') + appKey);
+    return `https://interface.bilibili.com/v2/playurl?qn=0&player=1&cid=${cid}&ts=${time}&sign=${signed}`;
 };
 
 async function parser(pageUrl) {
@@ -92,7 +93,7 @@ async function fetchVideo({ aid, cid, title, vurl, pageUrl }, vfolder) {
     const folder = url.parse(vurl);
     require('./mkdir')(path.parse(path.join(__dirname, '..', vfolder, folder.pathname)).dir);
     const save = path.join(__dirname, '..', vfolder, folder.pathname.substr(1));
-    await new Promise((res, rej) => {
+    const download = await new Promise((res, rej) => {
         log('视频文件地址：', vurl);
         const video = new fetch.FetchStream(vurl, {
             headers
@@ -102,9 +103,9 @@ async function fetchVideo({ aid, cid, title, vurl, pageUrl }, vfolder) {
             if (fs.existsSync(save)) {
                 const stat = fs.statSync(save);
                 if (total === stat.size) {
-                    log('已下载文件跳过下载');
+                    log('已下载文件跳过下载:', save);
                     video.destroy();
-                    res();
+                    res(false);
                     return;
                 }
             }
@@ -141,7 +142,7 @@ async function fetchVideo({ aid, cid, title, vurl, pageUrl }, vfolder) {
             });
         };
     });
-    return await new Promise((res, rej) => {
+    return download && await new Promise((res, rej) => {
         const file = path.join(path.parse(save).dir, 'info.json');
         const infostream = fs.createWriteStream(file);
         infostream.write(
