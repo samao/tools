@@ -23,20 +23,18 @@ function log(...arg) {
 function checkDirPath(pathname) {
     const { dir } = path.parse(pathname);
     const dirlist = dir.split('/');
-    mkdir(dirlist);
+    mkdirSync(dirlist.join(path.sep));
 }
 
-function mkdir(dirlist) {
-    let folder = path.join(__dirname);
-    if (dirlist.length > 0) {
-        do {
-            folder = path.join(folder, dirlist.shift());
-            if (fs.existsSync(folder)) {
-                continue;
-            }
-            log(chalk.yellow('create '), folder);
-            fs.mkdirSync(folder);
-        } while (dirlist.length > 0);
+function mkdirSync(dirPath) {
+    if (fs.existsSync(dirPath)) {
+        return true;
+    } else {
+        if (mkdirSync(path.dirname(dirPath))) {
+            fs.mkdirSync(dirPath);
+            return true;
+        }
+        return false;
     }
 }
 
